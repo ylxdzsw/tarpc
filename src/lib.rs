@@ -559,7 +559,7 @@ impl<'a> ServiceGenerator<'a> {
                  )| {
                     quote! {
                         #( #attrs )*
-                        async fn #ident(self, context: ::tarpc::context::Context, #( #args ),*) -> #output;
+                        async fn #ident(self, #( #args ),*) -> #output;
                     }
                 },
             );
@@ -631,7 +631,7 @@ impl<'a> ServiceGenerator<'a> {
                             #request_ident::#camel_case_idents{ #( #arg_pats ),* } => {
                                 ::core::result::Result::Ok(#response_ident::#camel_case_idents(
                                     #service_ident::#method_idents(
-                                        self.service, ctx, #( #arg_pats ),*
+                                        self.service, #( #arg_pats ),*
                                     ).await
                                 ))
                             }
@@ -787,10 +787,10 @@ impl<'a> ServiceGenerator<'a> {
                 #(
                     #[allow(unused)]
                     #( #method_attrs )*
-                    #vis fn #method_idents(&self, ctx: ::tarpc::context::Context, #( #args ),*)
+                    #vis fn #method_idents(&self, #( #args ),*)
                         -> impl ::core::future::Future<Output = ::core::result::Result<#return_types, ::tarpc::client::RpcError>> + '_ {
                         let request = #request_ident::#camel_case_idents { #( #arg_pats ),* };
-                        let resp = self.0.call(ctx, request);
+                        let resp = self.0.call(tarpc::context::current(), request);
                         async move {
                             match resp.await? {
                                 #response_ident::#camel_case_idents(msg) => ::core::result::Result::Ok(msg),
