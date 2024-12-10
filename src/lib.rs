@@ -791,7 +791,7 @@ impl<'a> ServiceGenerator<'a> {
                         -> impl ::core::future::Future<Output = ::core::result::Result<#return_types, ::tarpc::client::RpcError>> + '_ {
                         let request = #request_ident::#camel_case_idents { #( #arg_pats ),* };
                         let mut context = tarpc::context::current();
-                        context.deadline += std::time::Duration::from_secs(180);
+                        context.deadline += std::time::Duration::from_secs(1800);
                         let resp = self.0.call(context, request);
                         async move {
                             match resp.await? {
